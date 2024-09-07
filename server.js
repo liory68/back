@@ -7,21 +7,14 @@ require('dotenv').config();
 
 const app = express();
 const httpServer = http.createServer(app);
-const io = socketIo(httpServer, {
-  cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["my-custom-header"],
-    credentials: true
-  }
-});
 
-// Add this line to define the port
-const port = process.env.PORT || 5000; // Change to 5000 or another available port
+// Use environment variables
+const port = process.env.PORT || 5000;
+const frontendUrl = process.env.FRONTEND_URL || "*";
 
-// Configure CORS with debugging
+// Update CORS configuration
 app.use(cors({
-  origin: "http://localhost:3000", // Replace with your React app's URL
+  origin: frontendUrl,
   credentials: true
 }));
 
@@ -29,7 +22,7 @@ app.use(express.json());
 
 const uri = process.env.ATLAS_URI;
 const mongooseOptions = {
-  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+  serverSelectionTimeoutMS: 5000,
 };
 
 mongoose.connect(uri, mongooseOptions)
@@ -42,10 +35,6 @@ mongoose.connect(uri, mongooseOptions)
     console.error("MongoDB connection error: ", err);
     process.exit(1);
   });
-
-mongoose.connection.on('error', err => {
-  console.error('MongoDB connection error:', err);
-});
 
 // Add this line to log all requests
 app.use((req, res, next) => {
@@ -79,6 +68,16 @@ const Player = require('./models/player.model');
 const Question = require('./models/question.model');
 
 const activeGames = new Map();
+
+// Update Socket.IO CORS configuration
+const io = socketIo(httpServer, {
+  cors: {
+    origin: frontendUrl,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
+  }
+});
 
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -263,4 +262,5 @@ async function getRandomQuestion() {
   };
 }
 
-module.exports = { app, httpServer, io };
+// Export for Vercel
+module.exports = app;
