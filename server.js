@@ -10,7 +10,7 @@ const httpServer = http.createServer(app);
 
 // Use environment variables
 const port = process.env.PORT || 5000;
-const frontendUrl = process.env.FRONTEND_URL || "*";
+const frontendUrl = process.env.FRONTEND_URL || "https://front-delta-sepia.vercel.app";
 
 // Update CORS configuration
 app.use(cors({
