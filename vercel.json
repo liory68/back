@@ -7,12 +7,7 @@
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server.js"
-    }
-  ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/partykit" }
+    { "src": "/socket.io/(.*)", "dest": "server.js" },
+    { "src": "/(.*)", "dest": "server.js" }
   ]
 }
